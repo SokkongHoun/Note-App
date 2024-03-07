@@ -1,18 +1,29 @@
 import React from "react";
 import SplitPane, { Pane } from "split-pane-react";
-import NotesArea from "./Textarea";
+import { NotesArea } from "./Textarea";
 import "split-pane-react/esm/themes/default.css";
 import { EditIcon } from "../assets/icon";
 
-export function Sidebar() {
+export function SidebarSection() {
   const [sizes, setSizes] = React.useState([100, "30%", "auto"]);
-  const [addNotes, setAddNotes] = React.useState([]);
+  const [Notes, setNotes] = React.useState([
+    { id: 1, title: "Notes 1", task: "" },
+  ]);
+  const [activeNote, setActiveNote] = React.useState(Notes[0].id);
 
-  function NotesSidebar({ noteNumber }) {
+  function NotesSidebar(props) {
+    function activateNote() {
+      setActiveNote(props.note.id);
+    }
+
+    const noteClass = props.note.id === activeNote ? "bg-gray-600" : "";
     return (
-      <div className="cursor-pointer hover:bg-gray-600">
+      <div
+        onClick={() => activateNote()}
+        className={`active-note-jsx cursor-pointer hover:bg-gray-600 ${noteClass}`}
+      >
         <div className="flex justify-between px-4">
-          <h1 className="flex items-center h-10">Note {noteNumber}</h1>
+          <h1 className="flex items-center h-10">Note {props.noteNumber}</h1>
           <button>{EditIcon()}</button>
         </div>
       </div>
@@ -21,7 +32,7 @@ export function Sidebar() {
 
   function handleAddNotes() {
     const id = Date.now();
-    setAddNotes((prevNotes) => [
+    setNotes((prevNotes) => [
       ...prevNotes,
       {
         id: id,
@@ -29,7 +40,7 @@ export function Sidebar() {
         task: "",
       },
     ]);
-    console.log(addNotes);
+    console.log(Notes);
   }
 
   return (
@@ -51,12 +62,16 @@ export function Sidebar() {
           </div>
           <br />
           <br />
-          {addNotes.map((note, index) => (
-            <NotesSidebar key={note.id} noteNumber={index + 1} />
+          {Notes.map((note, index) => (
+            <NotesSidebar key={note.id} note={note} noteNumber={index + 1} />
           ))}
         </nav>
       </Pane>
-      <NotesArea createdNote={addNotes} />
+      <NotesArea
+        createdNote={Notes}
+        activeNote={activeNote}
+        setCreatedNotes={setNotes}
+      />
     </SplitPane>
   );
 }

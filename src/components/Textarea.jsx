@@ -1,11 +1,35 @@
 import React from "react";
 import EditorNavbar from "./EditorNav";
 
-function NotesArea(props) {
+export function NotesArea(props) {
   const [notes, setNotes] = React.useState("");
+  const [currentNote, setCurrentNote] = React.useState(null);
+
+  React.useEffect(() => {
+    const activeNote = props.activeNote;
+    const createdNote = props.createdNote;
+    const foundNote = createdNote.find((note) => note.id === activeNote);
+    setCurrentNote(() => foundNote);
+    if (foundNote) {
+      setNotes(foundNote.task);
+    }
+  }, [props.activeNote, props.createdNote]);
+
+  React.useEffect(() => {
+    if (currentNote) {
+      console.log(currentNote.task);
+    }
+  }, [currentNote]);
+
   function handleOnChanges(event) {
     setNotes(event.target.value);
-    console.log(notes);
+
+    const updatedNotes = props.createdNote.map((note) =>
+      note.id === props.activeNote
+        ? { ...note, task: event.target.value }
+        : note
+    );
+    props.setCreatedNotes(updatedNotes);
   }
 
   return (
@@ -25,5 +49,3 @@ function NotesArea(props) {
     </div>
   );
 }
-
-export default NotesArea;
