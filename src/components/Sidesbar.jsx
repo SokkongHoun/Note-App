@@ -2,19 +2,41 @@ import React from "react";
 import SplitPane, { Pane } from "split-pane-react";
 import NotesArea from "./Textarea";
 import "split-pane-react/esm/themes/default.css";
+import { EditIcon } from "../assets/icon";
 
-function Sidebar() {
+export function Sidebar() {
   const [sizes, setSizes] = React.useState([100, "30%", "auto"]);
+  const [addNotes, setAddNotes] = React.useState([]);
+
+  function NotesSidebar({ noteNumber }) {
+    return (
+      <div className="cursor-pointer hover:bg-gray-600">
+        <div className="flex justify-between px-4">
+          <h1 className="flex items-center h-10">Note {noteNumber}</h1>
+          <button>{EditIcon()}</button>
+        </div>
+      </div>
+    );
+  }
 
   function handleAddNotes() {
-    console.log("hello");
+    const id = Date.now();
+    setAddNotes((prevNotes) => [
+      ...prevNotes,
+      {
+        id: id,
+        title: "",
+        task: "",
+      },
+    ]);
+    console.log(addNotes);
   }
 
   return (
     <SplitPane split="vertical" sizes={sizes} onChange={setSizes}>
       <Pane minSize={200} maxSize="30%">
-        <div className="h-full rounded-l-lg  border border-gray-200 g bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-white">
-          <div className="mt-5 flex flex-row justify-around">
+        <nav className="h-full rounded-l-lg  border border-gray-200 g bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-white">
+          <div className="mt-5 flex flex-row  justify-between px-4">
             <div>
               <h1 className="text-gray-50 font-medium text-xl">Notes</h1>
             </div>
@@ -27,10 +49,14 @@ function Sidebar() {
               </button>
             </div>
           </div>
-        </div>
+          <br />
+          <br />
+          {addNotes.map((note, index) => (
+            <NotesSidebar key={note.id} noteNumber={index + 1} />
+          ))}
+        </nav>
       </Pane>
-      <NotesArea />
+      <NotesArea createdNote={addNotes} />
     </SplitPane>
   );
 }
-export default Sidebar;

@@ -1,7 +1,13 @@
 import React from "react";
 import EditorNavbar from "./EditorNav";
 
-function NotesArea() {
+function NotesArea(props) {
+  const [notes, setNotes] = React.useState("");
+  function handleOnChanges(event) {
+    setNotes(event.target.value);
+    console.log(notes);
+  }
+
   return (
     <div className="h-full flex flex-col rounded-r-lg">
       <EditorNavbar />
@@ -11,6 +17,8 @@ function NotesArea() {
             id="comment"
             className="w-full h-full px-3 py-3 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
             placeholder="Add your notes..."
+            value={notes}
+            onChange={handleOnChanges}
           />
         </div>
       </div>

@@ -1,6 +1,6 @@
 import "./index.css";
 import React from "react";
-import Sidebar from "./components/Sidesbar";
+import { Sidebar } from "./components/Sidesbar";
 
 function App() {
   return (
