@@ -18,10 +18,6 @@ export function SidebarSection() {
     localStorage.setItem("key", JSON.stringify(Notes));
   }, [Notes]);
 
-  Notes.forEach((note) => {
-    console.log(note.task);
-  });
-
   const [activeNote, setActiveNote] = React.useState(Notes[0].id);
 
   function NotesSidebar(props) {
@@ -37,7 +33,7 @@ export function SidebarSection() {
       >
         <div className="flex justify-between px-4">
           <h1 className="flex items-center h-10 w-32 overflow-clip text-nowrap">
-            {props.noteNumber}
+            {props.noteText}
           </h1>
           <button>{EditIcon()}</button>
         </div>
@@ -55,7 +51,6 @@ export function SidebarSection() {
         task: "",
       },
     ]);
-    console.log(Notes);
   }
 
   return (
@@ -79,13 +74,14 @@ export function SidebarSection() {
           <br />
           {Notes.map((note, index) => {
             // Remove HTML tags from the note body
-            const noteBodyWithoutTags = note.task.replace(/<(.|\\n)*?>/g, "");
+
+            let noteBodyFirstLine = note.task.replace(/<(.*?)>/g, "");
 
             return (
               <NotesSidebar
                 key={note.id}
                 note={note}
-                noteNumber={noteBodyWithoutTags}
+                noteText={noteBodyFirstLine}
               />
             );
           })}

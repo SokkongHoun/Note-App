@@ -37,12 +37,27 @@ export function NotesArea(props) {
   }, [props.activeNote, props.createdNote]);
 
   function handleOnChanges(content, delta, source, editor) {
-    setNotes(editor.getHTML());
+    const newContent = editor.getHTML();
+    setNotes(newContent);
 
-    const updatedNotes = props.createdNote.map((note) =>
-      note.id === props.activeNote ? { ...note, task: editor.getHTML() } : note
+    // Find the index of the active note
+    const index = props.createdNote.findIndex(
+      (note) => note.id === props.activeNote
     );
-    props.setCreatedNotes(updatedNotes);
+
+    if (index !== -1) {
+      // Update the task of the active note
+      const updatedNote = { ...props.createdNote[index], task: newContent };
+
+      // Remove the active note from its current position
+      props.createdNote.splice(index, 1);
+
+      // Add the updated note at the beginning of the array
+      props.createdNote.unshift(updatedNote);
+    }
+
+    // Update the state with the modified array
+    props.setCreatedNotes([...props.createdNote]);
   }
 
   return (
