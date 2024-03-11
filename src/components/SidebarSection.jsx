@@ -6,9 +6,22 @@ import { EditIcon } from "../assets/icon";
 
 export function SidebarSection() {
   const [sizes, setSizes] = React.useState([100, "30%", "auto"]);
-  const [Notes, setNotes] = React.useState([
-    { id: 1, title: "Notes 1", task: "" },
-  ]);
+  const [Notes, setNotes] = React.useState(() => {
+    return (
+      JSON.parse(localStorage.getItem("key")) || [
+        { id: 1, title: "Notes 1", task: "" },
+      ]
+    );
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem("key", JSON.stringify(Notes));
+  }, [Notes]);
+
+  Notes.forEach((note) => {
+    console.log(note.task);
+  });
+
   const [activeNote, setActiveNote] = React.useState(Notes[0].id);
 
   function NotesSidebar(props) {
@@ -23,7 +36,9 @@ export function SidebarSection() {
         className={`active-note-jsx cursor-pointer hover:bg-gray-600 ${noteClass}`}
       >
         <div className="flex justify-between px-4">
-          <h1 className="flex items-center h-10">Note {props.noteNumber}</h1>
+          <h1 className="flex items-center h-10 w-32 overflow-clip text-nowrap">
+            {props.noteNumber}
+          </h1>
           <button>{EditIcon()}</button>
         </div>
       </div>
@@ -62,9 +77,18 @@ export function SidebarSection() {
           </div>
           <br />
           <br />
-          {Notes.map((note, index) => (
-            <NotesSidebar key={note.id} note={note} noteNumber={index + 1} />
-          ))}
+          {Notes.map((note, index) => {
+            // Remove HTML tags from the note body
+            const noteBodyWithoutTags = note.task.replace(/<(.|\\n)*?>/g, "");
+
+            return (
+              <NotesSidebar
+                key={note.id}
+                note={note}
+                noteNumber={noteBodyWithoutTags}
+              />
+            );
+          })}
         </nav>
       </Pane>
       <NotesArea
