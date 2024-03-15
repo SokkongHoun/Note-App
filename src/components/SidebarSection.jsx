@@ -3,22 +3,25 @@ import SplitPane, { Pane } from "split-pane-react";
 import { NotesArea } from "./Textarea";
 import "split-pane-react/esm/themes/default.css";
 import { EditIcon } from "../assets/icon";
+import { addDoc, onSnapshot, doc, deleteDoc } from "firebase/firestore";
+import { notesCollection, db } from "../../firebase.js";
 
 export function SidebarSection() {
   const [sizes, setSizes] = React.useState([100, "30%", "auto"]);
-  const [Notes, setNotes] = React.useState(() => {
-    return (
-      JSON.parse(localStorage.getItem("key")) || [
-        { id: 1, title: "Notes 1", task: "" },
-      ]
-    );
-  });
+  const [Notes, setNotes] = React.useState([]);
 
   React.useEffect(() => {
-    localStorage.setItem("key", JSON.stringify(Notes));
-  }, [Notes]);
+    const unsubcribe = onSnapshot(notesCollection, (snapshot) => {
+      const notesArr = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setNotes(notesArr);
+    });
+    return unsubcribe;
+  }, []);
 
-  const [activeNote, setActiveNote] = React.useState(Notes[0].id);
+  const [activeNote, setActiveNote] = React.useState(Notes[0]?.id || "");
 
   function NotesSidebar(props) {
     function activateNote() {
@@ -37,7 +40,7 @@ export function SidebarSection() {
           </h1>
           <div className="flex justify-center items-center">
             <button>{EditIcon()}</button>
-            <button onClick={(event) => handleDeleteNote(event, props.note.id)}>
+            <button onClick={() => handleDeleteNote(props.note.id)}>
               <span className="material-symbols-outlined mt-1 ml-1">
                 delete
               </span>
@@ -47,21 +50,23 @@ export function SidebarSection() {
       </div>
     );
   }
-  function handleAddNotes() {
-    const id = Date.now();
-    setNotes((prevNotes) => [
-      ...prevNotes,
-      {
-        id: id,
-        title: "",
-        task: "",
-      },
-    ]);
+  async function handleAddNotes() {
+    const newNote = {
+      title: "",
+      task: "",
+    };
+
+    try {
+      const newNoteRef = await addDoc(notesCollection, newNote);
+      setActiveNote(newNoteRef.id);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
   }
-  function handleDeleteNote(event, noteId) {
-    event.stopPropagation();
-    let updateNotes = Notes.filter((note) => note.id !== noteId);
-    setNotes(updateNotes);
+
+  async function handleDeleteNote(noteId) {
+    const docRef = doc(db, "notes", noteId);
+    await deleteDoc(docRef);
   }
 
   return (

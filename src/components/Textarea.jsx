@@ -1,6 +1,8 @@
 import React from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // import styles
+import { updateDoc, doc } from "firebase/firestore";
+import { db } from "../../firebase";
 
 export function NotesArea(props) {
   const [notes, setNotes] = React.useState("");
@@ -40,7 +42,7 @@ export function NotesArea(props) {
     const newContent = editor.getHTML();
     setNotes(newContent);
 
-    // Find the index of the active note
+    /// Find the index of the active note
     const index = props.createdNote.findIndex(
       (note) => note.id === props.activeNote
     );
@@ -54,7 +56,12 @@ export function NotesArea(props) {
 
       // Add the updated note at the beginning of the array
       props.createdNote.unshift(updatedNote);
+
+      // Update the note in Firestore
+      const noteRef = doc(db, "notes", props.activeNote);
+      updateDoc(noteRef, updatedNote);
     }
+
     // Update the state with the modified array
     props.setCreatedNotes([...props.createdNote]);
   }
