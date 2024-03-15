@@ -55,7 +55,6 @@ export function NotesArea(props) {
       // Add the updated note at the beginning of the array
       props.createdNote.unshift(updatedNote);
     }
-
     // Update the state with the modified array
     props.setCreatedNotes([...props.createdNote]);
   }
