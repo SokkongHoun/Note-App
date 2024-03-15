@@ -1,6 +1,6 @@
 import React from "react";
 import SplitPane, { Pane } from "split-pane-react";
-import { NotesArea } from "./Textarea";
+import { NotesArea } from "./Textarea.jsx";
 import "split-pane-react/esm/themes/default.css";
 import { EditIcon } from "../assets/icon";
 import { addDoc, onSnapshot, doc, deleteDoc } from "firebase/firestore";

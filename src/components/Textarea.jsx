@@ -42,7 +42,7 @@ export function NotesArea(props) {
     const newContent = editor.getHTML();
     setNotes(newContent);
 
-    /// Find the index of the active note
+    // Find the index of the active note
     const index = props.createdNote.findIndex(
       (note) => note.id === props.activeNote
     );
@@ -51,11 +51,8 @@ export function NotesArea(props) {
       // Update the task of the active note
       const updatedNote = { ...props.createdNote[index], task: newContent };
 
-      // Remove the active note from its current position
-      props.createdNote.splice(index, 1);
-
-      // Add the updated note at the beginning of the array
-      props.createdNote.unshift(updatedNote);
+      // Update the active note in its current position
+      props.createdNote[index] = updatedNote;
 
       // Update the note in Firestore
       const noteRef = doc(db, "notes", props.activeNote);
